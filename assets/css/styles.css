@@ -565,7 +565,7 @@ footer {
   flex-wrap: wrap; gap: 24px;
 }
 .footer-brand { display: flex; flex-direction: column; gap: 8px; }
-.footer-logo  { height: 200px; width: auto; mix-blend-mode: screen; }
+.footer-logo  { height: 100px; width: auto; mix-blend-mode: screen; }
 .footer-tagline { font-size: 13px; color: var(--grey); }
 .footer-links { display: flex; gap: 32px; }
 .footer-links a {

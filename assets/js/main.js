@@ -2,8 +2,8 @@
 const BLUE = '#007BFF';
 
 const words = [
-  { hero: 'FAITH',   tag1: 'fitness', tag2: 'faith'   },
-  { hero: 'FITNESS', tag1: 'faith',   tag2: 'fitness' },
+  { hero: 'FAITH',   tag1: 'faith',   through1: 'fitness', tag2: 'fitness', through2: 'faith'   },
+  { hero: 'FITNESS', tag1: 'fitness', through1: 'faith',   tag2: 'faith',   through2: 'fitness' },
 ];
 
 let current = 0;
@@ -46,8 +46,10 @@ function doTransition() {
     cycleEl.style.transform  = 'translateY(0)';
     cycleEl.style.opacity    = '1';
 
-    tagWord1.textContent = w.tag1;
-    tagWord2.textContent = w.tag2;
+    tagWord1.textContent  = w.tag1;
+    tagWord2.textContent  = w.tag2;
+    document.getElementById('tagThrough1').textContent = w.through1;
+    document.getElementById('tagThrough2').textContent = w.through2;
 
     current = next;
     setTimeout(() => { cycling = false; }, 520);
@@ -83,6 +85,60 @@ setTimeout(() => {
     setInterval(doTransition, 3500);
   }
 }, 4000);
+
+// ── Feature highlight tabs ─────────────────────────────────────
+const hlTabs   = document.querySelectorAll('.hl-tab');
+const hlPanels = document.querySelectorAll('.hl-panel');
+
+hlTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const idx = tab.dataset.index;
+    hlTabs.forEach(t   => t.classList.remove('active'));
+    hlPanels.forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelector(`.hl-panel[data-index="${idx}"]`).classList.add('active');
+  });
+});
+
+// Auto-cycle tabs every 5s when section is in view
+let hlTimer = null;
+let hlCurrent = 0;
+const hlObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      hlTimer = setInterval(() => {
+        hlCurrent = (hlCurrent + 1) % hlTabs.length;
+        hlTabs.forEach(t   => t.classList.remove('active'));
+        hlPanels.forEach(p => p.classList.remove('active'));
+        hlTabs[hlCurrent].classList.add('active');
+        hlPanels[hlCurrent].classList.add('active');
+      }, 5000);
+    } else {
+      clearInterval(hlTimer);
+    }
+  });
+}, { threshold: 0.3 });
+const hlSection = document.getElementById('highlights');
+if (hlSection) hlObserver.observe(hlSection);
+
+// Stop auto-cycle when user manually clicks a tab
+hlTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    clearInterval(hlTimer);
+    hlCurrent = parseInt(tab.dataset.index);
+  });
+});
+
+// ── FAQ accordion ──────────────────────────────────────────────
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.querySelector('.faq-q').addEventListener('click', () => {
+    const isOpen = item.classList.contains('open');
+    // close all
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    // open clicked if it wasn't already open
+    if (!isOpen) item.classList.add('open');
+  });
+});
 
 // ── Fade in on scroll ──────────────────────────────────────────
 const fadeEls = document.querySelectorAll('.fade-in');
